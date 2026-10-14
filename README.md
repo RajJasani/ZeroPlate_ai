@@ -19,7 +19,7 @@
 
 **ZeroPlate AI** is a closed-loop food waste mitigation and redistribution platform engineered for institutional kitchens (universities, colleges, corporate dining facilities, and hospitals) and verified community shelters / NGOs.
 
-[Explore Architecture](#-system-architecture) • [Key Features](#-core-innovations--platform-features) • [User Portals](#-role-based-ecosystems) • [Getting Started](#-getting-started) • [API & Tests](#-verification--test-suites)
+[Architecture](#system-architecture) • [Key Features](#core-innovations) • [User Portals](#role-based-ecosystems) • [Tech Stack](#tech-stack) • [Getting Started](#getting-started) • [Test Suites](#verification-suites)
 
 </div>
 
@@ -37,10 +37,13 @@ Most surplus food is dumped because kitchens lack:
 
 **ZeroPlate AI resolves this end-to-end through a self-learning closed loop:**
 
-$$\text{Forecast Demand} \longrightarrow \text{FEFO Kitchen Stocking} \longrightarrow \text{Multi-Factor Safety Gate} \longrightarrow \text{Weighted Geo-Matching} \longrightarrow \text{Audit-Ready ESG Loop}$$
+```
+Forecast Demand ➔ FEFO Inventory ➔ Safety Gate ➔ Geo-Matching ➔ Safe Transit ➔ ESG Audit Loop
+```
 
 ---
 
+<a id="system-architecture"></a>
 ## 🏗️ System Architecture
 
 ZeroPlate AI is architected as a modern, decoupled hybrid system with a Next.js full-stack core and a specialized Python FastAPI time-series microservice.
@@ -99,6 +102,7 @@ flowchart TD
 
 ---
 
+<a id="core-innovations"></a>
 ## ✨ Core Innovations & Platform Features
 
 ### 1. 🧠 AI Demand & Surplus Forecasting
@@ -113,43 +117,47 @@ flowchart TD
 
 ### 3. 🛡️ Fail-Closed Multi-Criteria Food Safety Gating
 * **Strict FSSAI Alignment**: Adheres to the Food Safety and Standards Authority of India surplus redistribution parameters:
-  * Maximum allowable shelf-life from cooking to delivery (default $\le$ 4 hours for high-risk cooked foods).
-  * Storage temperature monitoring (hot holding $\ge 60^\circ\text{C}$, cold holding $\le 5^\circ\text{C}$).
+  * Maximum allowable shelf-life from cooking to delivery (default ≤ 4 hours for high-risk cooked foods).
+  * Storage temperature monitoring (hot holding ≥ 60°C, cold holding ≤ 5°C).
   * Organoleptic visual and aroma verification checkpoints.
 * **Fail-Closed Architecture**: Missing sensor readings, expired timestamps, or evaluation errors result in an automatic rejection to guarantee recipient safety.
 * **Immutable Audit Trail**: Every gating decision is stored permanently in the MongoDB `auditLogs` collection with rejection reasons.
 
 ### 4. 🎯 Weighted Algorithmic Geospatial Matching
 * **Multi-Factor Score**: Matches surplus food with candidate NGOs within operating radius using a balanced scoring formula:
-  $$\text{Match Score} = (0.45 \times \text{Proximity Score}) + (0.35 \times \text{Capacity Fit}) + (0.20 \times \text{Reliability Index})$$
+  $$\text{Match Score} = (0.45 \times \text{Proximity}) + (0.35 \times \text{Capacity Fit}) + (0.20 \times \text{Reliability Index})$$
 * **Haversine Geospatial Optimization**: Leverages spherical coordinates and MongoDB `2dsphere` indexes to evaluate real travel distances.
 * **Atomic Claim Locking**: Guarantees zero race conditions or double-claims using atomic MongoDB document mutations and state locks.
 
 ### 5. 🚚 Chain-of-Custody Logistics Tracking
-* **Discrete State Progression**: 
-  $$\texttt{assigned} \longrightarrow \texttt{accepted} \longrightarrow \texttt{picked\_up} \longrightarrow \texttt{delivered} \longrightarrow \texttt{confirmed}$$
+* **Discrete State Progression**:
+  ```
+  [assigned] ➔ [accepted] ➔ [picked_up] ➔ [delivered] ➔ [confirmed]
+  ```
 * **Interactive Leaflet Mapping**: Live coordinates, route visualization, and pickup/dropoff markers.
 * **Recipient Verification**: Direct digital receipt verification by the NGO shelter manager closes the custody loop.
 
 ### 6. 📊 Real-Time ESG & Sustainability Impact Engine
 * **Carbon Avoidance Calculation**: Converts salvaged food kilograms directly into GHG metrics based on FAO standards:
-  $$\text{CO}_2\text{e Avoided} = \text{Rescued Mass (kg)} \times 2.5\text{ kg CO}_2\text{e/kg}$$
+  $$\text{GHG Avoidance (kg CO}_2\text{e)} = \text{Rescued Food (kg)} \times 2.5$$
 * **Social Metrics**: Automatically tallies total meals delivered, people nourished, and virtual water conserved.
 * **CSR & ESG Reporting**: Generates audit-ready sustainability metrics suitable for institutional CSR filings and green building certifications.
 
 ---
 
+<a id="role-based-ecosystems"></a>
 ## 👥 Role-Based Ecosystems
 
 | Portal | Target User | Key Capabilities |
 | :--- | :--- | :--- |
 | **🏫 Institution Admin** | University Dining Halls, Hospitals, Corporate Canteens | • Real-time FEFO inventory management & batch expiration alerts<br>• 7-day AI demand forecasting & recommended prep volumes<br>• 1-click surplus publishing with automated safety validation<br>• Live dispatch tracking and cumulative ESG impact dashboard |
 | **🤝 Verified NGO** | Orphanages, Night Shelters, Community Kitchens | • KYC onboarding & verification status monitoring<br>• Geospatial browse and search of verified safe food listings<br>• 1-click atomic claiming of surplus batches<br>• Delivery arrival tracking and food condition acknowledgment |
-| **🚚 Delivery Fleet** | In-house Campus Drivers, Volunteer Couriers | • Dedicated mobile-responsive delivery workflow<br>• Turn-by-turn route overview with interactive Leaflet maps<br>• Instant status transitions (`accepted` $\to$ `picked_up` $\to$ `delivered`)<br>• Chain-of-custody transfer confirmation |
+| **🚚 Delivery Fleet** | In-house Campus Drivers, Volunteer Couriers | • Dedicated mobile-responsive delivery workflow<br>• Turn-by-turn route overview with interactive Leaflet maps<br>• Instant status transitions (`accepted` ➔ `picked_up` ➔ `delivered`)<br>• Chain-of-custody transfer confirmation |
 | **🛡️ Platform Admin** | Compliance Officers, System Super-Admins | • NGO KYC document review & verification approval/rejection<br>• Global food safety threshold configuration & category policies<br>• Full system audit trail inspections and user role governance<br>• Macro ecosystem performance metrics & platform reporting |
 
 ---
 
+<a id="tech-stack"></a>
 ## 💻 Tech Stack
 
 ### Web Application & API
@@ -217,7 +225,7 @@ ZeroPlate.ai_MVP/
 │   ├── test-delivery-experience.mjs  # Fleet dispatch & tracking suite
 │   ├── test-fefo-engine.mjs          # FEFO algorithm validation suite
 │   ├── test-final-verification.mjs   # Comprehensive end-to-end suite
-│   ├── test-matching-logistics.mjs   # Geospatial matching test suite
+│   ├── test-matching-logistics-forecast.mjs # Geospatial matching & forecast test suite
 │   ├── test-ngo-experience.mjs       # NGO claim & confirmation suite
 │   └── test-safety-gating.mjs        # FSSAI safety gating suite
 ├── .env.example                      # Sample configuration variables
@@ -228,6 +236,7 @@ ZeroPlate.ai_MVP/
 
 ---
 
+<a id="getting-started"></a>
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -316,6 +325,7 @@ Interactive FastAPI documentation will be available at `http://localhost:8000/do
 
 ---
 
+<a id="verification-suites"></a>
 ## 🧪 Verification & Test Suites
 
 ZeroPlate AI includes an extensive suite of automated test harnesses in the `scripts/` folder to validate core business logic, safety rules, and concurrency:
